@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public class Chess : MonoBehaviour {
 
     public int chessIndex;
@@ -23,4 +23,4 @@ public class Chess : MonoBehaviour {
         ChessPosition_X = i;
         ChessPosition_Y = j;
     }
-}
+}*/

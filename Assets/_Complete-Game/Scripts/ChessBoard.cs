@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+/*
 public class ChessBoard : MonoBehaviour {
 
     public GameObject RedChess;
@@ -369,3 +369,4 @@ public class ChessBoard : MonoBehaviour {
     }
 
 }
+*/

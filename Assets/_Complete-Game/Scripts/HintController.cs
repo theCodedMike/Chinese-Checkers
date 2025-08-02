@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+/*
 public class HintController : MonoBehaviour {
 
     public ChessBoard Board;
@@ -29,3 +29,4 @@ public class HintController : MonoBehaviour {
         }
 	}
 }
+*/

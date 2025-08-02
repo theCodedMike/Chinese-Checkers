@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4635888964019036}
   - component: {fileID: 212334074428764942}
   - component: {fileID: 58637976911847310}
-  - component: {fileID: 114569859125118334}
+  - component: {fileID: -7159051372305765317}
   m_Layer: 0
   m_Name: PositionPrefab
   m_TagString: Position
@@ -125,7 +125,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1
---- !u!114 &114569859125118334
+--- !u!114 &-7159051372305765317
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,11 +134,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1140522241094772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dac314854af725742b362a1dcc5902ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 689e60955ae3e474ba99df0deee98ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position_X: 0
-  Position_Y: 0
-  CanMove: 0
-  Normal: {fileID: 21300000, guid: bd2d9fc6288b60f4881154cf4176bd10, type: 3}
-  HeighLight: {fileID: 21300000, guid: 0392a37482cfd924c89738f959631412, type: 3}
+  posX: 0
+  posY: 0
+  canMove: 0
