@@ -8,10 +8,11 @@ public class ChessBoard : MonoBehaviour
     public GameObject redChessPrefab;
     [Header("蓝棋")]
     public GameObject blueChessPrefab;
+    [Header("高亮圈")]
+    public GameObject highLightObj;
     
     private const int BoardSize = 18;
     private static readonly Transform[][] BoardGrid = new Transform[BoardSize][]; // 存储所有棋盘位置
-
     private static readonly int[][] Pos =
     {
         new[] { 5, 5 }, // X为1，Y的上限为5，下限为5
@@ -32,8 +33,13 @@ public class ChessBoard : MonoBehaviour
         new[] { 12, 13 }, // X为16
         new[] { 13, 13 }, // X为17
     };
-
     private static readonly float Sqrt3 = Mathf.Sqrt(3);
+
+
+
+    private Transform _selectedChess; // 被选中的棋子
+    private SpriteRenderer _highLightSR;
+    private Camera _mainCamera;
 
     private void Start()
     {
@@ -41,6 +47,9 @@ public class ChessBoard : MonoBehaviour
         
         CreateChesses(redChessPrefab, 5, 8,  1, 4);
         CreateChesses(blueChessPrefab, 10, 13, 14, 17);
+        
+        _mainCamera = Camera.main;
+        _highLightSR = highLightObj.GetComponent<SpriteRenderer>();
     }
 
     // 生成棋盘位置
@@ -88,8 +97,40 @@ public class ChessBoard : MonoBehaviour
                 {
                     GameObject chessObj = Instantiate(chess, transform, true);
                     chessObj.GetComponent<Chess>().SetIdx(i, j);
-                    SetPosition(chess, i, j);
+                    SetPosition(chessObj, i, j);
                     BoardGrid[i][j] = chessObj.transform;
+                }
+            }
+        }
+    }
+
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(_mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            if (hit.collider)
+            {
+                Transform hitTransform = hit.transform;
+                if (hitTransform.CompareTag("RedChess") || hitTransform.CompareTag("BlueChess"))
+                {
+                    _selectedChess = hitTransform;
+                    Chess chess = hitTransform.GetComponent<Chess>();
+                    //print($"Chess: {chess.posX} {chess.posY}");
+                    SetPosition(highLightObj, chess.posX, chess.posY);
+                    _highLightSR.enabled = true;
+                    BoardGrid[chess.posX][chess.posY] = null;
+                } 
+                else if (_selectedChess && hitTransform.CompareTag("Position"))
+                {
+                    Position targetPos = hitTransform.GetComponent<Position>();
+                    //print($"Position: {clickPos.posX} {clickPos.posY}");
+                    SetPosition(_selectedChess.gameObject, targetPos.posX, targetPos.posY);
+                    _selectedChess.GetComponent<Chess>().SetIdx(targetPos.posX, targetPos.posY);
+                    BoardGrid[targetPos.posX][targetPos.posY] = _selectedChess;
+                    _highLightSR.enabled = false;
+                    _selectedChess = null;
                 }
             }
         }
