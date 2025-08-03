@@ -385,6 +385,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   posPrefab: {fileID: 1140522241094772, guid: 3540cd08d6e2d984b8639ff24aff2fa1, type: 3}
+  redChessPrefab: {fileID: 1246153144940638, guid: 03ffc8110a1c95f4ca9791f65dee751d, type: 3}
+  blueChessPrefab: {fileID: 1926976109828054, guid: 1e039c5c75733b642bb03bf194eff8c8, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

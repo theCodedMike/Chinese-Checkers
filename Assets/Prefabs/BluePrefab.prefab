@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4883639239775850}
   - component: {fileID: 212233032007162326}
-  - component: {fileID: 114368130328036130}
   - component: {fileID: 58829966648058858}
+  - component: {fileID: -5225321926366722602}
   m_Layer: 0
   m_Name: BluePrefab
   m_TagString: BlueChess
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1926976109828054}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 13.856406, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -89,21 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &114368130328036130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1926976109828054}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf01a13fb0c2cbe48920ba90041820eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chessIndex: 0
-  ChessPosition_X: 0
-  ChessPosition_Y: 0
 --- !u!58 &58829966648058858
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -140,3 +125,17 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1
+--- !u!114 &-5225321926366722602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926976109828054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba7cb103247e0f47b94efa3e1c8edd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  posX: 0
+  posY: 0

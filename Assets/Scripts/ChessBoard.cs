@@ -2,8 +2,13 @@ using UnityEngine;
 
 public class ChessBoard : MonoBehaviour
 {
+    [Header("棋盘位置")]
     public GameObject posPrefab;
-
+    [Header("红棋")]
+    public GameObject redChessPrefab;
+    [Header("蓝棋")]
+    public GameObject blueChessPrefab;
+    
     private const int BoardSize = 18;
     private static readonly Transform[][] BoardGrid = new Transform[BoardSize][]; // 存储所有棋盘位置
 
@@ -33,6 +38,9 @@ public class ChessBoard : MonoBehaviour
     private void Start()
     {
         CreatePositions();
+        
+        CreateChesses(redChessPrefab, 5, 8,  1, 4);
+        CreateChesses(blueChessPrefab, 10, 13, 14, 17);
     }
 
     // 生成棋盘位置
@@ -46,9 +54,9 @@ public class ChessBoard : MonoBehaviour
                 if (IsLegalPosition(i, j))
                 {
                     GameObject posObj = Instantiate(posPrefab, transform, true);
-                    BoardGrid[i][j] = posObj.transform;
-                    posObj.GetComponent<ChessPosition>().SetIdx(i, j);
+                    posObj.GetComponent<Position>().SetIdx(i, j);
                     SetPosition(posObj, i, j);
+                    BoardGrid[i][j] = posObj.transform;
                 }
             }
         }
@@ -68,5 +76,22 @@ public class ChessBoard : MonoBehaviour
             return false;
 
         return true;
+    }
+
+    private void CreateChesses(GameObject chess, int iUpper, int iLower, int jUpper, int jLower)
+    {
+        for (int i = iUpper; i <= iLower; i++)
+        {
+            for (int j = jUpper; j <= jLower; j++)
+            {
+                if (IsLegalPosition(i, j))
+                {
+                    GameObject chessObj = Instantiate(chess, transform, true);
+                    chessObj.GetComponent<Chess>().SetIdx(i, j);
+                    SetPosition(chess, i, j);
+                    BoardGrid[i][j] = chessObj.transform;
+                }
+            }
+        }
     }
 }

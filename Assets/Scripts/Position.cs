@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ChessPosition : MonoBehaviour
+public class Position : MonoBehaviour
 {
     public int posX; // 行
     public int posY; // 列
