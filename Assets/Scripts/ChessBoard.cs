@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum Direction
 {
@@ -20,6 +21,10 @@ public class ChessBoard : MonoBehaviour
     public GameObject blueChessPrefab;
     [Header("高亮圈")]
     public GameObject highLightObj;
+    [Header("人数")]
+    public int person = 2;
+    [Header("获胜提示")]
+    public Text hint;
     
     private const int BoardSize = 18;
     private static readonly Transform[][] BoardGrid = new Transform[BoardSize][]; // 存储所有棋盘位置
@@ -51,6 +56,10 @@ public class ChessBoard : MonoBehaviour
     private Transform _selectedChess; // 被选中的棋子
     private SpriteRenderer _highLightSR;
     private Camera _mainCamera;
+    [HideInInspector]
+    public int count; // 计数
+    [HideInInspector]
+    public bool isGameOver; // 游戏结束
 
     private void Start()
     {
@@ -119,13 +128,14 @@ public class ChessBoard : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isGameOver)
         {
             RaycastHit2D hit = Physics2D.Raycast(_mainCamera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.collider)
             {
                 Transform hitTransform = hit.transform;
-                if (hitTransform.CompareTag("RedChess") || hitTransform.CompareTag("BlueChess"))
+                // 蓝棋先走
+                if ((hitTransform.CompareTag("RedChess") && count % person == 1) || (hitTransform.CompareTag("BlueChess") && count % person == 0))
                 {
                     CancelCanMove(); // 重置可移动状态
                     _selectedChess = hitTransform;
@@ -146,6 +156,19 @@ public class ChessBoard : MonoBehaviour
                         _highLightSR.enabled = false;
                         _selectedChess = null;
                         CancelCanMove();
+                        
+                        // 游戏结束判定
+                        if (GameOver(redChessPrefab, 10, 13, 14, 17))
+                        {
+                            isGameOver = true;
+                            hint.text = "红棋获胜！";
+                        } else if (GameOver(blueChessPrefab, 5, 8, 1, 4))
+                        {
+                            isGameOver = true;
+                            hint.text = "蓝棋获胜！";
+                        }
+                        
+                        count++;
                     }
                 }
             }
@@ -241,7 +264,7 @@ public class ChessBoard : MonoBehaviour
     private void AddChess(int i, int j, Direction dir)
     {
         Transform neighbor = GetNeighbor(i, j, dir);
-        if (!neighbor) 
+        if (neighbor == null) 
             return;
         
         Position pos = neighbor.GetComponent<Position>();
@@ -249,6 +272,7 @@ public class ChessBoard : MonoBehaviour
             SecondJudge(pos.posX, pos.posY, dir);
     }
 
+    // 圈出可走位置
     private void SetAllowPlace(int i, int j)
     {
         FirstJudge(i, j, Direction.UpLeft);
@@ -257,5 +281,24 @@ public class ChessBoard : MonoBehaviour
         FirstJudge(i, j, Direction.Right);
         FirstJudge(i, j, Direction.DownLeft);
         FirstJudge(i, j, Direction.DownRight);
+    }
+
+    // 胜利判断
+    private bool GameOver(GameObject chess, int iUpper, int iLower, int jUpper, int jLower)
+    {
+        for (int i = iUpper; i <= iLower; i++)
+        {
+            for (int j = jUpper; j <= jLower; j++)
+            {
+                if (IsLegalPosition(i, j) && Chesses[i][j])
+                {
+                    if (!Chesses[i][j].CompareTag(chess.tag))
+                        return false;
+                } else if (IsLegalPosition(i, j) && !Chesses[i][j])
+                    return false;
+            }
+        }
+
+        return true;
     }
 }
