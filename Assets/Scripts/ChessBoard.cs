@@ -1,5 +1,15 @@
 using UnityEngine;
 
+public enum Direction
+{
+    UpLeft,
+    UpRight,
+    Left,
+    Right,
+    DownLeft,
+    DownRight
+}
+
 public class ChessBoard : MonoBehaviour
 {
     [Header("棋盘位置")]
@@ -13,6 +23,7 @@ public class ChessBoard : MonoBehaviour
     
     private const int BoardSize = 18;
     private static readonly Transform[][] BoardGrid = new Transform[BoardSize][]; // 存储所有棋盘位置
+    private static readonly Transform[][] Chesses = new Transform[BoardSize][]; // 存储所有棋盘位置
     private static readonly int[][] Pos =
     {
         new[] { 5, 5 }, // X为1，Y的上限为5，下限为5
@@ -58,6 +69,7 @@ public class ChessBoard : MonoBehaviour
         for (int i = 0; i < BoardSize; i++)
         {
             BoardGrid[i] = new Transform[BoardSize];
+            Chesses[i] = new Transform[BoardSize];
             for (int j = 0; j < BoardSize; j++)
             {
                 if (IsLegalPosition(i, j))
@@ -98,7 +110,7 @@ public class ChessBoard : MonoBehaviour
                     GameObject chessObj = Instantiate(chess, transform, true);
                     chessObj.GetComponent<Chess>().SetIdx(i, j);
                     SetPosition(chessObj, i, j);
-                    BoardGrid[i][j] = chessObj.transform;
+                    Chesses[i][j] = chessObj.transform;
                 }
             }
         }
@@ -115,24 +127,135 @@ public class ChessBoard : MonoBehaviour
                 Transform hitTransform = hit.transform;
                 if (hitTransform.CompareTag("RedChess") || hitTransform.CompareTag("BlueChess"))
                 {
+                    CancelCanMove(); // 重置可移动状态
                     _selectedChess = hitTransform;
                     Chess chess = hitTransform.GetComponent<Chess>();
-                    //print($"Chess: {chess.posX} {chess.posY}");
                     SetPosition(highLightObj, chess.posX, chess.posY);
                     _highLightSR.enabled = true;
-                    BoardGrid[chess.posX][chess.posY] = null;
+                    Chesses[chess.posX][chess.posY] = null;
+                    SetAllowPlace(chess.posX, chess.posY); // 计算周围可走位置，将可走位置标记为CanMove
                 } 
                 else if (_selectedChess && hitTransform.CompareTag("Position"))
                 {
                     Position targetPos = hitTransform.GetComponent<Position>();
-                    //print($"Position: {clickPos.posX} {clickPos.posY}");
-                    SetPosition(_selectedChess.gameObject, targetPos.posX, targetPos.posY);
-                    _selectedChess.GetComponent<Chess>().SetIdx(targetPos.posX, targetPos.posY);
-                    BoardGrid[targetPos.posX][targetPos.posY] = _selectedChess;
-                    _highLightSR.enabled = false;
-                    _selectedChess = null;
+                    if (targetPos.canMove)
+                    {
+                        SetPosition(_selectedChess.gameObject, targetPos.posX, targetPos.posY);
+                        _selectedChess.GetComponent<Chess>().SetIdx(targetPos.posX, targetPos.posY);
+                        Chesses[targetPos.posX][targetPos.posY] = _selectedChess;
+                        _highLightSR.enabled = false;
+                        _selectedChess = null;
+                        CancelCanMove();
+                    }
                 }
             }
         }
+    }
+
+    private void CancelCanMove()
+    {
+        for (int i = 0; i < BoardGrid.Length; i++)
+        {
+            for (int j = 0; j < BoardGrid[i].Length; j++)
+            {
+                if (IsLegalPosition(i, j))
+                    BoardGrid[i][j].GetComponent<Position>().canMove = false;
+            }
+        }
+    }
+
+    // 判断该位置是否有棋子
+    private bool HasChess(int i, int j) => Chesses[i][j];
+
+    // 获取相邻位置
+    //
+    //       B(X,Y+1)   C(X+1,Y+1)
+    //
+    //
+    // D(X-1,Y)     A(X,Y)     E(X+1,Y)
+    //
+    //
+    //       F(X-1,Y-1)  G(X,Y-1)
+    //
+    private Transform GetNeighbor(int i, int j, Direction dir)
+    {
+        int x = 0;
+        int y = 0;
+        switch (dir)
+        {
+            case Direction.UpLeft: x = i; y = j + 1;
+                break;
+            case Direction.UpRight: x = i + 1; y = j + 1;
+                break;
+            case Direction.Left: x = i - 1; y = j; 
+                break;
+            case Direction.Right: x = i + 1; y = j; 
+                break;
+            case Direction.DownLeft: x = i - 1; y = j - 1; 
+                break;
+            case Direction.DownRight: x = i; y = j - 1;
+                break;
+        }
+
+        return IsLegalPosition(x, y) ? BoardGrid[x][y] : null;
+    }
+
+    // 判断第一圈周围的棋子可走
+    private void FirstJudge(int i, int j, Direction dir)
+    {
+        Transform neighbor = GetNeighbor(i, j, dir);
+        if (neighbor == null) 
+            return;
+        
+        Position pos = neighbor.GetComponent<Position>();
+        if (!HasChess(pos.posX, pos.posY))
+            pos.canMove = true;
+        else
+            SecondJudge(pos.posX, pos.posY, dir);
+    }
+    
+    // 判断第二圈周围的棋子可走
+    private void SecondJudge(int i, int j, Direction dir)
+    {
+        Transform neighbor = GetNeighbor(i, j, dir);
+        if (neighbor == null) 
+            return;
+        
+        Position pos = neighbor.GetComponent<Position>();
+        if (!HasChess(pos.posX, pos.posY))
+        {
+            if (!pos.canMove)
+            {
+                pos.canMove = true;
+                AddChess(pos.posX, pos.posY, Direction.UpLeft);
+                AddChess(pos.posX, pos.posY, Direction.UpRight);
+                AddChess(pos.posX, pos.posY, Direction.Left);
+                AddChess(pos.posX, pos.posY, Direction.Right);
+                AddChess(pos.posX, pos.posY, Direction.DownLeft);
+                AddChess(pos.posX, pos.posY, Direction.DownRight);
+            }
+        }
+    }
+    
+    // 判断第三阶段
+    private void AddChess(int i, int j, Direction dir)
+    {
+        Transform neighbor = GetNeighbor(i, j, dir);
+        if (!neighbor) 
+            return;
+        
+        Position pos = neighbor.GetComponent<Position>();
+        if (HasChess(pos.posX, pos.posY))
+            SecondJudge(pos.posX, pos.posY, dir);
+    }
+
+    private void SetAllowPlace(int i, int j)
+    {
+        FirstJudge(i, j, Direction.UpLeft);
+        FirstJudge(i, j, Direction.UpRight);
+        FirstJudge(i, j, Direction.Left);
+        FirstJudge(i, j, Direction.Right);
+        FirstJudge(i, j, Direction.DownLeft);
+        FirstJudge(i, j, Direction.DownRight);
     }
 }

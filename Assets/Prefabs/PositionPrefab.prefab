@@ -137,6 +137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689e60955ae3e474ba99df0deee98ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normal: {fileID: 21300000, guid: bd2d9fc6288b60f4881154cf4176bd10, type: 3}
+  highLight: {fileID: 21300000, guid: 0392a37482cfd924c89738f959631412, type: 3}
   posX: 0
   posY: 0
   canMove: 0
